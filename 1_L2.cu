@@ -26,19 +26,24 @@ int main() {
   // case 1: 64MB copy, should exceed L2 cache on A100
   // 1048576 * 64/sizeof(T);
   // case 2: 2MB copy, should fit in L2 cache on A100
-    // 1048576 * 2/sizeof(T);
-    // case 3: 32MB copy, should exceed L2 cache on A100(32*2MB>40)
-    // 1048576 * 32/sizeof(T);
-    // case 4: 16MB copy, should fit in L2 cache on A100
-    // 1048576 * 16/sizeof(T);
+  // 1048576 * 2/sizeof(T);
+  // case 3: 32MB copy, should exceed L2 cache on A100(32*2MB>40)
+  // 1048576 * 32/sizeof(T);
+  // case 4: 16MB copy, should fit in L2 cache on A100
+  // 1048576 * 16/sizeof(T);
 
-  int csize_list[] = {1048576 * 64/sizeof(T), 1048576 * 2/sizeof(T), 1048576*32/sizeof(T), 1048576*16/sizeof(T)};
+  int csize_list[] = {1048576 * 64 / sizeof(T), 1048576 * 2 / sizeof(T),
+                      1048576 * 32 / sizeof(T), 1048576 * 16 / sizeof(T)};
 
-  for(int i = 0; i < 4; i++){
+  dim3 grid(80 * 2, 1, 1), block(1024, 1, 1);
+  printf("grid dim %d, block dim %d, sizeof type: %lu bytes\n", grid.x, block.x,
+         sizeof(T));
+
+  for (int i = 0; i < 4; i++) {
     int csize = csize_list[i];
-    float ms = do_bench([&]() { k<<<80 * 2, 1024>>>(d, d + csize, iter, csize); });
-    printf("case %d: %lu MB copy, %f ms\n", i, csize*sizeof(T)/1048576, ms);
+    float ms =
+        do_bench([&]() { k<<<80 * 2, 1024>>>(d, d + csize, iter, csize); });
+    printf("case %d: %lu MB copy, %f ms\n", i, csize * sizeof(T) / 1048576, ms);
     printf("BW: %f GB/s\n", 2.0 * csize * sizeof(T) * iter / ms / 1e6);
   }
-
 }
