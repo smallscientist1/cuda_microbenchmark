@@ -1,6 +1,6 @@
 /*
-no volatile to use float4,
-but the load was optimized.
+no volatile to use float4;
+the load was cached to L1 cache(because of no volatile, LDG.E), not optimized by compiler.
 */
 #include "utils/do_bench.cuh"
 #include <cstdint>
