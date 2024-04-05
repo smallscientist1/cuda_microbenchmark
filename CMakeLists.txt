@@ -29,11 +29,10 @@ target_compile_options(1_L2 PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
 )
 
-add_executable(1_L2_vec 1_L2_vec.cu)
-
-target_link_libraries(1_L2_vec
-    ${CUDA_LIBRARIES}
-)
-target_compile_options(1_L2_vec PRIVATE
-    $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
-)
+# add_executable(1_L2_vec 1_L2_vec.cu)
+# target_link_libraries(1_L2_vec
+#     ${CUDA_LIBRARIES}
+# )
+# target_compile_options(1_L2_vec PRIVATE
+#     $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
+# )

@@ -1,3 +1,7 @@
+/*
+no volatile to use float4,
+but the load was optimized.
+*/
 #include "utils/do_bench.cuh"
 #include <cstdint>
 #include <iostream>
@@ -6,7 +10,6 @@
 template <typename T>
 __global__ void k(T *__restrict__ d1, T *__restrict__ d2,
                   const int loops, const int ds) {
-
   for (int i = 0; i < loops; i++)
     for (int j = (threadIdx.x + blockDim.x * blockIdx.x); j < ds;
          j += gridDim.x * blockDim.x)
