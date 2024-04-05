@@ -2,17 +2,25 @@
 #include <cstdint>
 #include <iostream>
 
+#define THREAD_ATOM 1
+
 template <typename T>
 __global__ void k(volatile T *__restrict__ d1, volatile T *__restrict__ d2,
                   const int loops, const int ds) {
 
   for (int i = 0; i < loops; i++)
-    for (int j = threadIdx.x + blockDim.x * blockIdx.x; j < ds;
-         j += gridDim.x * blockDim.x)
-      if (i & 1)
-        d1[j] = d2[j];
-      else
-        d2[j] = d1[j];
+    for (int j = (threadIdx.x + blockDim.x * blockIdx.x)*THREAD_ATOM; j < ds;
+         j += gridDim.x * blockDim.x*THREAD_ATOM)
+      if (i & 1){
+        #pragma unroll
+        for(int k=0;k<THREAD_ATOM;k++)
+          d1[j+k] = d2[j+k];
+      }
+      else{
+        #pragma unroll
+        for(int k=0;k<THREAD_ATOM;k++)
+          d2[j+k] = d1[j+k];
+      }
 }
 
 const int dsize = 1048576 * 128;
@@ -35,14 +43,14 @@ int main() {
   int csize_list[] = {1048576 * 64 / sizeof(T), 1048576 * 2 / sizeof(T),
                       1048576 * 32 / sizeof(T), 1048576 * 16 / sizeof(T)};
 
-  dim3 grid(80 * 2, 1, 1), block(1024, 1, 1);
+  dim3 grid(512, 1, 1), block(256, 1, 1);
   printf("grid dim %d, block dim %d, sizeof type: %lu bytes\n", grid.x, block.x,
          sizeof(T));
 
   for (int i = 0; i < 4; i++) {
     int csize = csize_list[i];
     float ms =
-        do_bench([&]() { k<<<80 * 2, 1024>>>(d, d + csize, iter, csize); });
+        do_bench([&]() { k<<<grid, block>>>(d, d + csize, iter, csize); });
     printf("case %d: %lu MB copy, %f ms\n", i, csize * sizeof(T) / 1048576, ms);
     printf("BW: %f GB/s\n", 2.0 * csize * sizeof(T) * iter / ms / 1e6);
   }
