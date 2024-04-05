@@ -12,6 +12,8 @@ message(STATUS "CXX compiler: ${CMAKE_CXX_COMPILER}, version: "
 message(STATUS "C compiler: ${CMAKE_C_COMPILER}, version: "
                "${CMAKE_C_COMPILER_ID} ${CMAKE_C_COMPILER_VERSION}")
 
+list(APPEND CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}" "-O3" "-lineinfo")
+
 
 # must delete CMakeCache.txt(命令行指定的参数会缓存, CMAkeLists中的不会;通过 set(CMAKE_CUDA_ARCHITECTURES native CACHE STRING "CUDA ARCH") 初始化缓存变量)
 set(PROJECT_CUDA_ARCH native CACHE STRING "CUDA ARCH")
@@ -22,4 +24,7 @@ add_executable(1_L2 1_L2.cu)
 
 target_link_libraries(1_L2
     ${CUDA_LIBRARIES}
+)
+target_compile_options(1_L2 PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
 )
