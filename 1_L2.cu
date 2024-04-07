@@ -11,16 +11,16 @@ __global__ void k(volatile T *__restrict__ d1, volatile T *__restrict__ d2,
   for (int i = 0; i < loops; i++)
     for (int j = (threadIdx.x + blockDim.x * blockIdx.x)*THREAD_ATOM; j < ds;
          j += gridDim.x * blockDim.x*THREAD_ATOM)
-      if (i & 1){
+      // if (i & 1){
         #pragma unroll
         for(int k=0;k<THREAD_ATOM;k++)
           d1[j+k] = d2[j+k];
-      }
-      else{
-        #pragma unroll
-        for(int k=0;k<THREAD_ATOM;k++)
-          d2[j+k] = d1[j+k];
-      }
+      // }
+      // else{
+      //   #pragma unroll
+      //   for(int k=0;k<THREAD_ATOM;k++)
+      //     d2[j+k] = d1[j+k];
+      // }
 }
 
 const int dsize = 1048576 * 128;
@@ -40,7 +40,7 @@ int main() {
   // case 4: 16MB copy, should fit in L2 cache on A100
   // 1048576 * 16/sizeof(T);
 
-  int csize_list[] = {1048576 * 64 / sizeof(T), 1048576 * 2 / sizeof(T),
+  int csize_list[] = {1048576 * 4 / sizeof(T), 1048576 * 2 / sizeof(T),
                       1048576 * 32 / sizeof(T), 1048576 * 16 / sizeof(T)};
 
   dim3 grid(512, 1, 1), block(256, 1, 1);
