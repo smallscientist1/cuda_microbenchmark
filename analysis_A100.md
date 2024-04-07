@@ -8,7 +8,7 @@ A100 PCIe 80GB
 - lts__t_tag_requests: 1 requests/cycle
 - lts2xbar: 2 sectors/active cycle (with L2 compression?)
 - lts__t_sectors: 3 sectors/active cycle (with L2 compression? 2 sectors load + 1 sectors L2 fabric)
-- lts__d_sectors: 4 sectors/active warp
+- lts__d_sectors: 4 sectors/active cycle
 - xbar2lts: ???
 
 
