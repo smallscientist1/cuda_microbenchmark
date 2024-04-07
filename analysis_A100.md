@@ -26,9 +26,9 @@ case 3: 16 MB copy, 0.990820 ms
 BW: 2167.379567 GB/s
 ```
 
-- ncu profile `2MB copy,iters 64`:
-L1 load: 134e6 Bytes ( = 2*64MB)
-L1 store: 134e6 Bytes ( = 2*64MB)
+- ncu profile `2MB copy,iters 64` L2 memory chart:
+L1 load: 134e6 Bytes ( = 2*64MB), hit rate: 50.14 %
+L1 store: 134e6 Bytes ( = 2*64MB), hit rate: 100%
 L2 fabric total: 110e6 Bytes (unknown)
 L2: Xbar2lts Cycles Active [%]: 46.99 % 
 small grid: 0.74 waves per SM
