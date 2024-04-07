@@ -1,4 +1,17 @@
 # L2cache
+A100 PCIe 80GB
+- partitioned L2 cache: 80 MB (https://www.techpowerup.com/gpu-specs/a100-pcie-80-gb.c3821 ), but 40 MB on ncu report(device__attribute_l2_cache_size)
+- L2 cache throughput (non compression, 1 sectors per elapsed cycle for load&store ): 32 (Bytes per sector) * 8 (l2 slices per framebuffer partition) * 10 (framebuffer partitions)= 2560 Bytes/cycle. 2560 * 1.41e9 (SM clock) = 3609.6 GB/s
+- TODO: cub blockload(ld.global.nc, LDG.E.CONSTANT); CP_ASYNC(cp.async.cg.shared.global, LDGSTS.E.BYPASS.128), 1.5 sectors/cycle: 3840 Bytes/cycle, 3840 * 1.41e9 = 5414.4 GB/s
+
+## L2 cache throughput breakdown
+- lts__t_tag_requests: 1 requests/cycle
+- lts2xbar: 2 sectors/active cycle (with L2 compression?)
+- lts__t_sectors: 3 sectors/active cycle (with L2 compression? 2 sectors load + 1 sectors L2 fabric)
+- lts__d_sectors: 4 sectors/active warp
+- xbar2lts: ???
+
+
 ## type int32
 ```
 grid dim 160, block dim 1024
