@@ -1,7 +1,9 @@
 # L2cache
 RTX4090
 - 72 MB Cache
-- L2 cache throughput (non compression, 1 sectors per elapsed cycle for load&store ): 32 (Bytes per sector) * 8 (l2 slices per framebuffer partition) * 6 (framebuffer partitions)= 1536 Bytes/cycle. 1536 * 2.52e9 (SM clock) = 3871 GB/s
+- L2 cache throughput **compute** (non compression, 1 sectors per elapsed cycle for load&store ): 32 (Bytes per sector) * 8 (l2 slices per framebuffer partition) * 6 (framebuffer partitions)= 1536 Bytes/cycle. 1536 * 2.52e9 (SM clock) = 3871 GB/s
+- L2 cache throughput **actual** ( 1 sectors/cycle for load&store): 1024 sectors/cycle (32 l2s concurrent, not 48)
+- CP_ASYNC(cp.async.cg.shared.global, LDGSTS.E.BYPASS.128), 1.9 sectors/cycle: 1945.6 Bytes/cycle,   4903 GB/s
 
 
 ## TODO
