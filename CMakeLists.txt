@@ -38,6 +38,14 @@ target_compile_options(1_L2 PRIVATE
 #     $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
 # )
 
+add_executable(1_L2_loadd2stored1 1_L2_loadd2stored1.cu)
+target_link_libraries(1_L2_loadd2stored1
+    ${CUDA_LIBRARIES}
+)
+target_compile_options(1_L2_loadd2stored1 PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
+)
+
 add_executable(1_L2_loadonly 1_L2_loadonly.cu)
 target_link_libraries(1_L2_loadonly
     ${CUDA_LIBRARIES}
