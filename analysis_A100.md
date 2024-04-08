@@ -9,7 +9,7 @@ A100 PCIe 80GB
 - lts2xbar: 2 sectors/active cycle (with L2 compression?)
 - lts__t_sectors: 3 sectors/active cycle (with L2 compression? 2 sectors load + 1 sectors L2 fabric)
 - lts__d_sectors: 4 sectors/active cycle
-- xbar2lts: ???
+- xbar2lts: 1 sectors/active cycle (L1 store to L2, ...)
 
 
 ## type int32
@@ -26,20 +26,22 @@ case 3: 16 MB copy, 0.990820 ms
 BW: 2167.379567 GB/s
 ```
 
-- ncu profile `2MB copy,iters 64` L2 memory chart:
-L1 load: 134e6 Bytes ( = 2*64MB), hit rate: 50.14 %
-L1 store: 134e6 Bytes ( = 2*64MB), hit rate: 100%
-L2 fabric total: 110e6 Bytes (unknown)
-L2: Xbar2lts Cycles Active [%]: 46.99 % 
-small grid: 0.74 waves per SM
+### ncu profile `2MB copy,iters 64` L2 memory chart:
+- L1 load: 134e6 Bytes ( = 2*64MB), hit rate: 50.14 % (??? sector misses to device is 1334704 ??? but device memory load sectors is 65548 ( 2MB), , maybe contains L2 fabric sectors )
+- L1 store: 134e6 Bytes ( = 2*64MB), hit rate: 100% ( because of duplicated L2, store causes L2 fabric throughput)
+- L2 fabric total: 135e6 Bytes (seems load_misses+store)
+- L2: Xbar2lts Cycles Active [%]: 46.99 % 
+- small grid: 0.74 waves per SM
 
-- ncu ptx & sass
-`ld.volatile.global.u32` `LDG.E.STRONG.SYS`
-`st.volatile.global.u32` `STG.E.STRONG.SYS`
+### ncu ptx & sass
+- `ld.volatile.global.u32` `LDG.E.STRONG.SYS`
+- `st.volatile.global.u32` `STG.E.STRONG.SYS`
 
+### compute L2 tag&data bandwidth
+- consider peak store: 1 sector/cycle T-stage, 268e6 Bytes / 0.76 / 0.11ms = 3206 GB/s
+- consider peak load: 2 sectors/cycle T-stage, 134e6 Bytes / 0.19 / 0.11ms = 6411 GB/s
+- consider peak L2__xbar2lts: 1 sector/cycle + 0.5 sector/cycle: (134e6 + 135e6 + 2e6) Bytes / 0.47 / 0.11ms = 5242 GB/s (may larger, because active cycles may only execute 1 operation)
 
-378e6 / 46.99% / 0.11ms = 7310 GB/s
-268e6 / 46.99% / 0.11ms = 5185 GB/s
 
 ### Questions
 `ld.volatile.global` cannot be vectorized?
