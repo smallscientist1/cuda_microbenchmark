@@ -2,7 +2,7 @@
 A100 PCIe 80GB
 - partitioned L2 cache: 80 MB (https://www.techpowerup.com/gpu-specs/a100-pcie-80-gb.c3821 ), but 40 MB on ncu report(device__attribute_l2_cache_size)
 - L2 cache throughput (non compression, 1 sectors per elapsed cycle for load&store ): 32 (Bytes per sector) * 8 (l2 slices per framebuffer partition) * 10 (framebuffer partitions)= 2560 Bytes/cycle. 2560 * 1.41e9 (SM clock) = 3609.6 GB/s
-- TODO: cub blockload(ld.global.nc, LDG.E.CONSTANT); CP_ASYNC(cp.async.cg.shared.global, LDGSTS.E.BYPASS.128), 1.5 sectors/cycle: 3840 Bytes/cycle, 3840 * 1.41e9 = 5414.4 GB/s
+- cub blockload(ld.global.nc, LDG.E.CONSTANT); CP_ASYNC(cp.async.cg.shared.global, LDGSTS.E.BYPASS.128), 1.5 sectors/cycle: 3840 Bytes/cycle, 3840 * 1.41e9 = 5414.4 GB/s
 
 ## L2 cache throughput breakdown
 - lts__t_tag_requests: 1 requests/cycle
@@ -42,6 +42,9 @@ BW: 2167.379567 GB/s
 - consider peak load: 2 sectors/cycle T-stage, 134e6 Bytes / 0.19 / 0.11ms = 6411 GB/s
 - consider peak L2__xbar2lts: 1 sector/cycle + 0.5 sector/cycle: (134e6 + 135e6 + 2e6) Bytes / 0.47 / 0.11ms = 5242 GB/s (may larger, because active cycles may only execute 1 operation)
 
+### hypothesis
+- d1=d2 cause latency bound on A100 because of 2 L2cache
+- L2 cache fabric throuphput bound
 
 ### Questions
 `ld.volatile.global` cannot be vectorized?
