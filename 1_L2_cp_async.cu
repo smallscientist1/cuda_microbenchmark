@@ -100,6 +100,8 @@ int main(){
     int l = 2048;
     int block_kdim = 128;
     float *d_q;
+    int device_id = 0;
+    cudaSetDevice(device_id);
     cudaMalloc(&d_q, batch*heads*kdim*l*sizeof(float));
     L2_cuda(d_q, batch, heads, kdim, vdim, l, block_kdim);
     float ms = do_bench([&]() {
