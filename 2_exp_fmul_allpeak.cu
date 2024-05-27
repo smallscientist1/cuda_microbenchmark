@@ -3,8 +3,11 @@
 #include <iostream>
 
 // A100 FP32 64 cores/SM, SFU 16 cores/SM
+// #define REG_NUM 64
+// #define REG_NUM_EXP 32
+// H100 FP32 128 cores/SM, SFU 16 cores/SM
 #define REG_NUM 64
-#define REG_NUM_EXP 32
+#define REG_NUM_EXP 16
 __global__ void k(float* g_a, float* g_b, const int loops){
     float a[REG_NUM], a1[REG_NUM];
     float b[REG_NUM_EXP];
@@ -46,6 +49,8 @@ __global__ void k(float* g_a, float* g_b, const int loops){
 }
 
 int main(){
+    int device_id = 7;
+    cudaSetDevice(device_id);
     int loops = 10000;
     dim3 grid(512, 1, 1), block(256, 1, 1);
     float* d_a, *d_b;
