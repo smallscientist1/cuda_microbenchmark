@@ -61,3 +61,11 @@ target_link_libraries(1_L2_cp_async
 target_compile_options(1_L2_cp_async PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
 )
+
+add_executable(3_load_fp8 3_load_fp8.cu)
+target_link_libraries(3_load_fp8
+    ${CUDA_LIBRARIES}
+)
+target_compile_options(3_load_fp8 PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
+)
