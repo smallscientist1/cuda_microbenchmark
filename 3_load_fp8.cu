@@ -9,7 +9,7 @@
 #define BLOCK_SIZE_K 128
 
 #define Nthreads 256
-#define STAGES 2
+#define STAGES 3
 
 // b: [experts, N, K]
 __global__ void fp8_kernel(uint8_t* b_ptr, int n, int k,int bn_stride, int loops){
@@ -32,12 +32,15 @@ __global__ void fp8_kernel(uint8_t* b_ptr, int n, int k,int bn_stride, int loops
     Tensor tcopygB = gmem_thr_copy.partition_S(gB); // ((_16,_1),_2,_1,32):((_1,_0),131072,_0,_128)
     Tensor tcopysB = gmem_thr_copy.partition_D(sB); // ((_16,_1),_2,_1,_2):((_1,_0),_4096,_0,_8192)
     // here _,_,_, depends on GmemTiledCopy(不好的封装)
-    copy(gmem_tiled_copy, tcopygB(_,_,_,0), tcopysB(_,_,_,0));
-    cute::cp_async_fence();
-    for(int i=1;i<size<2>(gB);i++){
+    #pragma unroll
+    for(int i=0;i<STAGES-1;i++){
+        copy(gmem_tiled_copy, tcopygB(_,_,_,i), tcopysB(_,_,_,i));
+        cute::cp_async_fence();
+    }
+    for(int i=STAGES-1;i<size<2>(gB);i++){
         copy(gmem_tiled_copy, tcopygB(_,_,_,i), tcopysB(_,_,_,i%STAGES));
         cute::cp_async_fence();
-        cute::cp_async_wait<1>();
+        cute::cp_async_wait<STAGES-1>();
     }
     cute::cp_async_wait<0>();
 
